@@ -1,14 +1,15 @@
 require 'rails_helper'
 
 RSpec.describe SchoolsController, type: :controller do
+  let(:school) { FactoryGirl.create(:school) }
 
   describe "GET #index" do
     it "returns http success" do
       get :index
-      expect(response).to have_http_status(:success)
     end
   
     it 'sets the schools instance variable' do 
+      school 
       get :index
       expect(assigns(:schools)).to eq([])
     end 
@@ -28,19 +29,16 @@ RSpec.describe SchoolsController, type: :controller do
 
   describe "GET #show" do
     it "returns http success" do
-      school = School.create(name: 'West High', size: '5A', established: '1940')
       get :show, id:school.id
       expect(response).to have_http_status(:success)
     end
     
     it 'renders the show template' do 
-      school = School.create(name: 'West High', size: '5A', established: '1940')
       get :show, id:school.id
       expect(response).to render_template(:show)
     end 
 
     it 'sets the school instance variable' do
-      school = School.create(name: 'West High', size: '5A', established: '1940')
       get :show, id: school.id
       expect(assigns(:school).name).to eq(school.name)
     end
@@ -65,7 +63,6 @@ RSpec.describe SchoolsController, type: :controller do
 
   describe 'POST #create' do
     it 'sets the school instance variable' do 
-      school_params = {school: {name: 'test school', size: '4A', established: '1920'}}
       expect(School.count).to eq(0)
       post :create, school_params
       expect(assigns(:school)).to_not eq(nil)
@@ -73,7 +70,6 @@ RSpec.describe SchoolsController, type: :controller do
     end 
 
     it 'creates a new school' do 
-      school_params = {school: {name: 'test school', size: '4A', established: '1920'}}
       expect(School.count).to eq(0)
       post :create, school_params
       expect(School.count).to eq(1)
@@ -103,19 +99,16 @@ RSpec.describe SchoolsController, type: :controller do
 
   describe "GET #edit" do
     it "returns http success" do
-      school = School.create(name: 'West High', size: '5A', established: '1940')
       get :edit, id: school.id
       expect(response).to have_http_status(:success)
     end
   
     it 'renders edit template' do 
-      school = School.create(name: 'West High', size: '5A', established: '1940')
       get :edit, id: school.id
       expect(response).to render_template(:edit)
     end 
 
     it 'sets school instance variable' do 
-      school = School.create(name: 'West High', size: '5A', established: '1940')
       get :edit, id: school.id
       expect(assigns(:school).id).to eq(school.id)
     end
@@ -127,17 +120,8 @@ RSpec.describe SchoolsController, type: :controller do
     end 
 
     it 'updates the school' do 
-      school = School.create(name: 'West High', size: '5A', established: '1940')
       put :update, {id: school.id, school: {name: 'West High'}}
       expect(school.reload.name).to eq('West High')
-    end 
-
-    it 'redirects to the show on success' do 
-      school = School.create(name: 'West High', size: '5A', established: '1940')
-    end 
-
-    it 'renders the edit template on fail' do 
-      school = School.create(name: 'West High', size: '5A', established: '1940')
     end 
 
     it 'sets the flash sucess on update' do 
@@ -147,26 +131,22 @@ RSpec.describe SchoolsController, type: :controller do
 
   describe 'DELETE #destroy' do 
     it 'sets the school instance variable' do 
-      school = School.create(name: 'West High', size: '5A', established: '1940')
       delete :destroy, id: school.id 
       expect(assigns(:school)).to eq(school)
     end 
 
     it 'destroys the school successfully' do 
-      school = School.create(name: 'West High', size: '5A', established: '1940')
       expect(School.count).to eq(1)
       delete :destroy, id: school.id 
       expect(School.count).to eq(0)
     end   
 
     it 'sets the flash success message' do 
-      school = School.create(name: 'West High', size: '5A', established: '1940')
       delete :destroy, id: school.id
       expect(flash[:success]).to eq('school deleted!')
     end 
 
     it 'redirects to the index path after destroy' do
-      school = School.create(name: 'West High', size: '5A', established: '1940')
       delete :destroy, id:school.id
       expect(response).to redirect_to(schools_path)
     end 
